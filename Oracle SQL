@@ -1,0 +1,88 @@
+1. Количество строк в таблице EMP с непустым значением поля ENAME
+
+SELECT COUNT (ENAME)
+    FROM EMP
+        WHERE ENAME IS NOT NULL;
+
+2. Перечислить имена и зарплаты всех сотрудников департаментов 1 и 7, с зарплатами меньше 1000, имена которых начинаются на S ('Smith', 'Simpson', ...)
+
+SELECT  DEPTNO,
+        ENAME,
+        SAL
+    FROM EMP
+        WHERE   ENAME LIKE '%S%' AND 
+                DEPTNO IN (1,7) AND
+                SAL < 1000;
+3. Список номеров, имён и должностей всех сотрудников департамента 4, упорядоченный по имени
+
+SELECT  EMPNO,
+        ENAME,
+        JOB
+    FROM EMP
+        WHERE DEPTNO = 4
+ORDER BY ENAME;
+
+4. Список имён сотрудников с именами департаментов, в которых они работают, упорядоченный по имени департамента и имени сотрудника
+
+SELECT
+    e.ENAME,
+    d.DNAME
+    FROM EMP e
+    FULL OUTER JOIN DEPT d ON e.DEPTNO = d.DEPTNO
+ORDER BY d.DNAME, e.ENAME;
+
+5. Какие необходимо создать индексы для оптимизации запроса в предыдущем пункте:
+
+CREATE INDEX EMP_NAME_IDX
+ON EMP(ENAME)
+
+CREATE INDEX DEPT_NAME_IDX
+ON DEPT(DNAME)
+
+6. Список имён сотрудников, имеющих наибольшую зарплату в своём департаменте
+
+SELECT
+   e.ENAME
+FROM EMP e
+WHERE e.SAL = 
+    (SELECT
+        MAX(SAL)
+    FROM EMP 
+    WHERE EMP.DEPTNO = e.DEPTNO);
+
+7. Наибольшую суммарную зарплату среди департаментов
+
+SELECT
+    SUM(SAL) as Total_salary,
+    DEPTNO
+FROM EMP
+GROUP BY DEPTNO
+ORDER BY Total_salary DESC
+FETCH FIRST 1 ROWS ONLY;
+
+8. Список имён департаментов, не имеющих сотрудников
+
+SELECT
+    d.DNAME
+FROM EMP e
+FULL OUTER JOIN DEPT d
+   ON d.DEPTNO = e.DEPTNO
+   WHERE e.ENAME IS NULL
+GROUP BY d.DNAME
+ORDER BY d.DNAME;
+
+9. Список имён сотрудников, нанятых на предприятие в течение последних 12 месяцев
+
+SELECT  ENAME,
+        HIREDATE
+    FROM EMP
+    WHERE HIREDATE > '10.04.2021';
+
+10. Перечислить в порядке убывания зарплат имена и зарплаты 10 наиболее высокооплачиваемых сотрудников предприятия (top10)
+
+SELECT  ENAME,
+        SAL,
+    FROM EMP;
+    
+ORDER BY SAL DESC
+FETCH FIRST 10 ROW ONLY;
